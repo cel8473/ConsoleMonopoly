@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\retzi\\source\\repos\\ConsoleMonopoly\\ConsoleMonopoly.csproj": {}
+    "C:\\Users\\retzi\\source\\repos\\cel8473\\ConsoleMonopoly\\ConsoleMonopoly\\ConsoleMonopoly.csproj": {}
   },
   "projects": {
-    "C:\\Users\\retzi\\source\\repos\\ConsoleMonopoly\\ConsoleMonopoly.csproj": {
+    "C:\\Users\\retzi\\source\\repos\\cel8473\\ConsoleMonopoly\\ConsoleMonopoly\\ConsoleMonopoly.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\retzi\\source\\repos\\ConsoleMonopoly\\ConsoleMonopoly.csproj",
+        "projectUniqueName": "C:\\Users\\retzi\\source\\repos\\cel8473\\ConsoleMonopoly\\ConsoleMonopoly\\ConsoleMonopoly.csproj",
         "projectName": "ConsoleMonopoly",
-        "projectPath": "C:\\Users\\retzi\\source\\repos\\ConsoleMonopoly\\ConsoleMonopoly.csproj",
+        "projectPath": "C:\\Users\\retzi\\source\\repos\\cel8473\\ConsoleMonopoly\\ConsoleMonopoly\\ConsoleMonopoly.csproj",
         "packagesPath": "C:\\Users\\retzi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\retzi\\source\\repos\\ConsoleMonopoly\\obj\\",
+        "outputPath": "C:\\Users\\retzi\\source\\repos\\cel8473\\ConsoleMonopoly\\ConsoleMonopoly\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\retzi\\AppData\\Roaming\\NuGet\\NuGet.Config",
