@@ -5,7 +5,7 @@ namespace ConsoleMonopoly
 {
     class Monopoly
     {
-        public enum Actions { EndTurn, Roll, BuyHouse, Trade, Unmortgage };
+        public enum Actions { EndTurn, Roll, Trade, Unmortgage, Funds, Properties, Houses };
         static void Main(string[] args) 
         {
             Console.WriteLine("Welcome to Console Monopoly!");
@@ -216,73 +216,230 @@ namespace ConsoleMonopoly
                             {
                                 currentPlayer.Location -= 40;
                             }
-                            Console.WriteLine("You have moved forward {0} spaces and landed on {1}", max, board.Properties[currentPlayer.Location].Name);
-                            string landedType = board.Properties[currentPlayer.Location].Type;
-                            switch (landedType)
+                            IProperty currentProperty = board.Properties[currentPlayer.Location];
+                            Console.WriteLine("You have moved forward {0} spaces and landed on {1}", max, currentProperty.Name);
+                            /* Now that they have landed do something*/
+                            int rentDue = RentCalculator(board, currentPlayer, max);
+                            switch(rentDue)
                             {
-                                case "Reg":
-                                    var regProperty = (RegularProperty) board.Properties[currentPlayer.Location];
-                                    if (regProperty.IsOwned) /* If the property is owned */
+                                case 0: /* Mortgaged */
+                                    Console.WriteLine("This property is mortgaged by {0}, no rent is due.", currentProperty.Owner.Name);
+                                    break;
+                                case -1: /* This property is unowned */
+                                    Console.WriteLine("This property is unowned. Would you like to purchase it? Y/N");
+                                    Console.WriteLine("The default answer is No.");
+                                    if(currentPlayer.Funds > currentProperty.Cost || Console.ReadKey().Key == ConsoleKey.Y)
                                     {
-                                        if (regProperty.IsMortgaged)
+                                        Console.WriteLine("Congratulations, you have purchased {0} for ${1}!");
+                                        currentPlayer.OwnedProperties.Append(currentProperty);
+                                        currentProperty.Owner = currentPlayer;
+                                        currentProperty.IsOwned = true;
+                                        if (MonopolyChecker(currentPlayer, currentProperty))
                                         {
-                                            Console.WriteLine("This property is mortgaged. No rent is due!");
-                                        }
-                                        else
-                                        {
-                                            int rentDue = (int) regProperty.RentArray.GetValue(regProperty.NumOfHouses);
-                                            Console.WriteLine("You payed {0} ${1} in rent.", rentDue, regProperty.Owner.Name);
-                                            currentPlayer.Funds -= rentDue;
-                                            regProperty.Owner.Funds += rentDue;
+                                            Console.WriteLine("Congratulations, you have made a monopoly and can start buying houses.");
                                         }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("No one owns this property! Would you like to purchase it? Y/N");
-                                        Console.WriteLine("The default choice is No.");
-                                        string answer = Console.ReadLine().Trim();
-                                        if (answer.Equals("Y"))
-                                        {
-                                            if (regProperty.Cost > currentPlayer.Funds)
-                                            {
-                                                Console.WriteLine("Unfortunately you do not have sufficient funds.");
-                                            }
-                                            else
-                                            {
-                                                Console.WriteLine("Congratulations, you have purchased {0} for ${1}", regProperty.Name, regProperty.Cost);
-                                                Console.WriteLine("Your funds are now ${0}", currentPlayer.Funds);
-                                                regProperty.Owner = currentPlayer;
-                                                currentPlayer.OwnedProperties.Append(regProperty);
-                                                if (MonopolyChecker(currentPlayer))
-                                                {
-
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            /* This might be used for auctions later.*/
-                                        }
+                                        Console.WriteLine("You either had insufficient funds or chose to not purchase the property. Time for an auction!");
+                                        /* auction time */
                                     }
                                     break;
-                                case "RR":
-                                    var rrProperty = (RailRoadProperty) board.Properties[currentPlayer.Location];
+                                case -2: /* This is a misc property */
+
+                                    break;
+                                default: /* Rent is due. Handled in the function */
+                                    Console.WriteLine("You payed ${0} to {1} for rent.", rentDue, currentProperty.Owner.Name);
                                     break;
                             }
-                            /* Now that they have landed do something*/
+                            break;
+                        case 4: /* Funds */
+                            Console.WriteLine("You currently have ${0} in your funds.", currentPlayer.Funds);
+                            break;
+                        case 5: /*Properties */
+                            foreach (IProperty property in currentPlayer.OwnedProperties)
+                            {
+                                if (property.Type == "Util")
+                                {
+                                    Console.WriteLine("Name: {0}", property.Name);
+                                }
+                                else if(property.Type == "RR")
+                                {
+                                    RailRoadProperty RRproperty = (RailRoadProperty)property;
+                                    Console.WriteLine("Name: {0} Rent: {1}", property.Name, (int)RRproperty.RentArray.GetValue(RRproperty.NumOfRRs));
+                                }
+                                else
+                                {
+                                    RegularProperty regularProperty = (RegularProperty)property;
+                                    Console.WriteLine("Name: {0} Rent: {1} House Cost: {2}", regularProperty.Name, (int)regularProperty.RentArray.GetValue(regularProperty.NumOfHouses), regularProperty.HouseCost);
+                                }
+                            }
                             break;
                     }
                 }
             }
         }
 
-        static bool MonopolyChecker(Player player) /* Does the player have a monopoly?*/
+        static bool MonopolyChecker(Player player, IProperty property) /* Does the player have a monopoly?*/
         {
-            if(player.OwnedProperties.Contains())
-            return false;
+            if (property.Type.Equals("Reg"))
+            {
+                RegularProperty regular = (RegularProperty)property;
+                RegularProperty[] colorCheck = new RegularProperty[3];
+                foreach(RegularProperty prop1 in player.OwnedProperties)
+                {
+                    if(prop1.Color == regular.Color)
+                    {
+                        colorCheck.Append(prop1);
+                    }
+                }
+                RegularProperty.ColorGroup[] twoColorProps = new RegularProperty.ColorGroup[] { RegularProperty.ColorGroup.DarkBlue, RegularProperty.ColorGroup.DarkPurple };
+                if (twoColorProps.Contains(regular.Color))
+                {
+                    if(colorCheck.Length == 2)
+                    {
+                        foreach(RegularProperty reg1 in colorCheck)
+                        {
+                            reg1.Monopoly = true;
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if(colorCheck.Length == 3)
+                    {
+                        foreach(RegularProperty reg1 in colorCheck)
+                        {
+                            reg1.Monopoly = true;
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if(property.Type.Equals("RR"))
+            {
+                int r = 0;
+                foreach(RailRoadProperty rail1 in player.OwnedProperties)
+                {
+                    r++;
+                }
+                foreach (RailRoadProperty rail2 in player.OwnedProperties)
+                {
+                    rail2.NumOfRRs = r;
+                }
+                return false;
+            }
+            else if(property.Type.Equals("Util"))
+            {
+                int u = 0;
+                foreach(UtilityProperty util1 in player.OwnedProperties)
+                {
+                    u++;
+                }
+                if(u == 2)
+                {
+                    foreach(UtilityProperty util2 in player.OwnedProperties)
+                    {
+                        util2.BothUtils = true;
+                    }
+                }
+                return false;
+            }
+            else /* Misc or Chance/CC */
+            {
+                return false;
+            }
+        }
+
+        static int RentCalculator(Board board, Player player, int roll)
+        {
+            string landedType = board.Properties[player.Location].Type;
+            switch (landedType)
+            {
+                case "Reg":
+                    var regProperty = (RegularProperty)board.Properties[player.Location];
+                    if (regProperty.IsOwned) /* If the property is owned */
+                    {
+                        if (regProperty.IsMortgaged)
+                        {
+                            return 0;
+                        }
+                        else
+                        {
+                            int rentDue = (int)regProperty.RentArray.GetValue(regProperty.NumOfHouses);
+                            if (regProperty.Monopoly && regProperty.NumOfHouses == 0)
+                            {
+                                rentDue *= 2;
+                                player.Funds -= rentDue;
+                                regProperty.Owner.Funds += rentDue;
+                                return rentDue;
+                            }
+                            else
+                            {
+                                player.Funds -= rentDue;
+                                regProperty.Owner.Funds += rentDue;
+                                return rentDue;
+                            }
+                        }
+                    }
+                    else
+                    {
+                         return -1;
+                    }
+                case "RR":
+                    var rrProperty = (RailRoadProperty)board.Properties[player.Location];
+                    if (rrProperty.IsOwned) /* If the property is owned */
+                    {
+                        if (rrProperty.IsMortgaged)
+                        {
+                            return 0;
+                        }
+                        else
+                        {
+                            int rentDue = (int)rrProperty.RentArray.GetValue(rrProperty.NumOfRRs);
+                            player.Funds -= rentDue;
+                            rrProperty.Owner.Funds += rentDue;
+                            return rentDue;
+                        }
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                case "Util":
+                    var utilProperty = (UtilityProperty)board.Properties[player.Location];
+                    if (utilProperty.IsOwned)
+                    {
+                        if (utilProperty.IsMortgaged)
+                        {
+                            return 0;
+                        }
+                        else
+                        {
+                            int rentDue;
+                            if (utilProperty.Monopoly) { rentDue = roll * 10; }
+                            else { rentDue = roll * 4; }
+                            player.Funds -= rentDue;
+                            utilProperty.Owner.Funds += rentDue;
+                            return rentDue;
+                        }
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                default:
+                    return -2;
+            }
         }
     }
-
-
-
 }

@@ -12,13 +12,14 @@ namespace ConsoleMonopoly
         public Array RentArray { get; set; } /*The rent according to houses, other RRs, or other utility card */
         public int Mortgage { get; set; } /* The value of the mortgage*/
         public bool IsOwned { get; set; } /* Is this property owned? True/False*/
+        public Player Owner { get; set; } /* The owner of the property */
         public bool IsMortgaged { get; set; } /* Is this property mortgaged? True/False*/
     }
 
-    class RegularProperty : IProperty
+    public class RegularProperty : IProperty
     {
         /* Regular Properties (Mediterranean Avenue) see IProperty for generic variables*/
-        public enum ColorGroup { DarkPurple, LightBlue, Violet, Orange, Red, Yellow, Green, DarkBlue, Tax }; /* Each of the colors that a property can be*/
+        public enum ColorGroup { DarkPurple, LightBlue, Violet, Orange, Red, Yellow, Green, DarkBlue}; /* Each of the colors that a property can be*/
         public string Name { get; set; }
         public string Type { get; set; }
         public int Cost { get; set; }
@@ -57,6 +58,7 @@ namespace ConsoleMonopoly
         public string Type { get; set; }
         public int Cost { get; set; }
         public int Location { get; set; }
+        public int NumOfRRs { get; set; }
         public Array RentArray { get; set; }
         public int Mortgage { get; set; }
         public bool IsOwned { get; set; }
@@ -68,6 +70,7 @@ namespace ConsoleMonopoly
             Type = "RR";
             Cost = 200; /* Cost is always 200 and mortgage is always 100 */
             Location = location;
+            NumOfRRs = 0;
             RentArray = rentArray;
             Mortgage = 100;
             IsOwned = false;
@@ -83,6 +86,7 @@ namespace ConsoleMonopoly
         public string Type { get; set; }
         public int Cost { get; set; }
         public int Location { get; set; }
+        public bool BothUtils { get; set; }
         public Array RentArray { get; set; }
         public int Mortgage { get; set; }
         public bool IsOwned { get; set; }
@@ -96,6 +100,7 @@ namespace ConsoleMonopoly
             Type = "Util";
             Cost = 150; /* Cost is always 150, mortgage is always 75 */
             Location = location;
+            BothUtils = false;
             RentArray = rentArray;
             Mortgage = 75;
             IsOwned = false;
@@ -116,6 +121,7 @@ namespace ConsoleMonopoly
         public Array RentArray { get; set; }
         public int Mortgage { get; set; }
         public bool IsOwned { get; set; }
+        public Player Owner { get; set; }
         public bool IsMortgaged { get; set; }
         public int[] Deck { get; set; } /* The deck of instructions that is random integers */
         public ChanceAndCommChest(string name, int location, int[] deck)
@@ -143,6 +149,7 @@ namespace ConsoleMonopoly
         public Array RentArray { get; set; }
         public int Mortgage { get; set; }
         public bool IsOwned { get; set; }
+        public Player Owner { get; set; }
         public bool IsMortgaged { get; set; }
         public MiscType SpaceType { get; set; } /* The type of space, in the misc category*/
         public MiscSpace(string name, int location, MiscType spaceType)

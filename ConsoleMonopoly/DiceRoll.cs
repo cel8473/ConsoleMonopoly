@@ -17,11 +17,7 @@ namespace ConsoleMonopoly
 
         public bool IsDoubles(int first, int second)
         {
-            if (first == second)
-            {
-                return true;
-            }
-            else { return false; }
+            return first == second;
         }
 
         public bool TripleDoubles() { return false; }
