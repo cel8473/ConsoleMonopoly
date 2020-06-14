@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ConsoleMonopoly
@@ -182,12 +183,18 @@ namespace ConsoleMonopoly
             bool isGameStillGoing = true;
             int turn = index;
             Player currentPlayer = listOfPlayers[index];
+            int chanceCard = 0;
+            int commChestCard = 0;
             while (isGameStillGoing)
             {
                 bool endTurn = true;
                 while (endTurn)
                 {
                     Console.WriteLine("It is {0}'s turn. What would you like to do?", listOfPlayers[turn]);
+                    if (currentPlayer.isJail)
+                    {
+                        Console.WriteLine("You are currently in jail. Your actions are limited to");
+                    }
                     int j = 0;
                     foreach (var action in Enum.GetValues(typeof(Action)))
                     {
@@ -205,11 +212,11 @@ namespace ConsoleMonopoly
                     }
                     switch (playerAction)
                     {
-                        case 0:
+                        case 0: /* End turn */
                             Console.WriteLine("You have chosen to end your turn");
                             endTurn = false;
                             break;
-                        case 1:
+                        case 1: /* Roll */
                             max = dice.Roll();
                             currentPlayer.Location += max;
                             if(currentPlayer.Location > 39)
@@ -219,7 +226,7 @@ namespace ConsoleMonopoly
                             IProperty currentProperty = board.Properties[currentPlayer.Location];
                             Console.WriteLine("You have moved forward {0} spaces and landed on {1}", max, currentProperty.Name);
                             /* Now that they have landed do something*/
-                            int rentDue = RentCalculator(board, currentPlayer, max);
+                            int rentDue = RentCalculator(board, currentPlayer, max); /* Rent is due. Handled in the function */
                             switch(rentDue)
                             {
                                 case 0: /* Mortgaged */
@@ -245,10 +252,53 @@ namespace ConsoleMonopoly
                                         /* auction time */
                                     }
                                     break;
-                                case -2: /* This is a misc property */
-
+                                case -2: /* This is a misc property or CC/Chance */
+                                    if(currentProperty.Type == "CC") /* Chance or CC*/
+                                    {
+                                        ChanceAndCommChest CC = (ChanceAndCommChest)currentProperty;
+                                        int card = CC.Deck[commChestCard];
+                                        CommChestCards(listOfPlayers, card, currentPlayer);
+                                        commChestCard++;
+                                        if(commChestCard > 15)
+                                        {
+                                            commChestCard = 0;
+                                        }
+                                    }
+                                    else if(currentProperty.Type == "Chance")
+                                    {
+                                        ChanceAndCommChest Chance = (ChanceAndCommChest)currentProperty;
+                                        int card = Chance.Deck[chanceCard];
+                                        ChanceCards(listOfPlayers, card, currentPlayer);
+                                        chanceCard++;
+                                        if(chanceCard > 15)
+                                        {
+                                            chanceCard = 0;
+                                        }
+                                    }
+                                    else /* Misc: Parking, Visiting, GO, Jail */
+                                    {
+                                        MiscSpace misc = (MiscSpace)currentProperty;
+                                        switch (misc.SpaceType)
+                                        {
+                                            case MiscSpace.MiscType.Parking:
+                                                Console.WriteLine("You have landed on Free Parking. Enjoy your free parking!");
+                                                break;
+                                            case MiscSpace.MiscType.Visiting:
+                                                Console.WriteLine("You have landed on Visiting Jail. Say hi to the inmates.");
+                                                break;
+                                            case MiscSpace.MiscType.GO:
+                                                Console.WriteLine("You have landed on GO. Here is your 200$.");
+                                                currentPlayer.Funds += 200;
+                                                break;
+                                            case MiscSpace.MiscType.GoToJail:
+                                                Console.WriteLine("Go To Jail. Go directly to Jail Do not pass GO, do not collect $200.");
+                                                currentPlayer.isJail = true;
+                                                break;
+                                        }
+                                        
+                                    }
                                     break;
-                                default: /* Rent is due. Handled in the function */
+                                default: 
                                     Console.WriteLine("You payed ${0} to {1} for rent.", rentDue, currentProperty.Owner.Name);
                                     break;
                             }
@@ -439,6 +489,122 @@ namespace ConsoleMonopoly
                     }
                 default:
                     return -2;
+            }
+        }
+
+        static void CommChestCards(Player[] listOfPlayers, int cardNumber, Player player)
+        {
+            switch (cardNumber)
+            {
+                case 0:
+                    Console.WriteLine("Income Tax Refund. You have collected $20");
+                    player.Funds += 20;
+                    break;
+                case 1:
+                    Console.WriteLine("Grand Opera Opening. You collect $50 from every player");
+                    foreach(Player iterPlayer in listOfPlayers)
+                    {
+                        iterPlayer.Funds -= 50;
+                    }
+                    player.Funds += (listOfPlayers.Length + 1) * 50;
+                    break;
+                case 2:
+                    Console.WriteLine("You Payed The Hospital $100");
+                    player.Funds -= 100;
+                    break;
+                case 3:
+                    Console.WriteLine("Advance To GO. You have collected $200");
+                    player.Location = 0;
+                    player.Funds += 200;
+                    break;
+                case 4:
+                    Console.WriteLine("Get Out Of Jail, Free");
+                    player.JailFreeCard = true;
+                    break;
+                case 5:
+                    Console.WriteLine("Xmas Fund Matures. You have collected $100");
+                    player.Funds += 100;
+                    break;
+                case 6:
+                    Console.WriteLine("From Sale of Stock. You have collected $45");
+                    player.Funds += 45;
+                    break;
+                case 7:
+                    Console.WriteLine("Life Insurance Matures. You have collected $100");
+                    player.Funds += 100;
+                    break;
+                case 8:
+                    Console.WriteLine("Receive $25 for Services.");
+                    player.Funds += 25;
+                    break;
+                case 9:
+                    Console.WriteLine("Go Directly To Jail Go directly to Jail Do not pass GO, Do not collect $200");
+                    player.isJail = true;
+                    break;
+                case 10:
+                    Console.WriteLine("You Have Won Second Prize In A Beauty Contest. You have collected $10");
+                    player.Funds += 10;
+                    break;
+                case 11:
+                    Console.WriteLine("Pay School Tax Of $150. You are helping the children.");
+                    player.Funds -= 150;
+                    break;
+                case 12:
+                    Console.WriteLine("Doctor's Fee Pay $50. I wish doctor visits were this cheap.");
+                    player.Funds -= 50;
+                    break;
+                case 13:
+                    Console.WriteLine("You Are Assessed For Street Repairs. You pay $40 per house and $115 per hotel");
+                    foreach(RegularProperty regular in player.OwnedProperties)
+                    {
+                        /* You still need to finish this.*/
+                    }
+                    break;
+                case 14:
+                    Console.WriteLine("Bank Error In Your Favor. You have collected $200");
+                    break;
+                case 15:
+                    Console.WriteLine("You Inherit $100, you lucky duck.");
+                    player.Funds += 100;
+                    break;
+            }
+        }
+        static void ChanceCards(Player[] listOfPlayers, int cardNumber, Player player)
+        {
+            switch (cardNumber)
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    break;
+                case 8:
+                    break;
+                case 9:
+                    break;
+                case 10:
+                    break;
+                case 11:
+                    break;
+                case 12:
+                    break;
+                case 13:
+                    break;
+                case 14:
+                    break;
+                case 15:
+                    break;
             }
         }
     }

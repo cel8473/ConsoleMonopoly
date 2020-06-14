@@ -6,7 +6,7 @@ namespace ConsoleMonopoly
     {
         /* Interface for the Property spaces*/
         public string Name { get; set; } /* The name of the space*/
-        public string Type { get; set; }
+        public string Type { get; set; } /* Reg, RR, Util, CC, Chance, Misc */
         public int Cost { get; set; } /*The cost to buy the space*/
         public int Location { get; set; } /*The location of the space on the board*/
         public Array RentArray { get; set; } /*The rent according to houses, other RRs, or other utility card */
@@ -19,7 +19,7 @@ namespace ConsoleMonopoly
     public class RegularProperty : IProperty
     {
         /* Regular Properties (Mediterranean Avenue) see IProperty for generic variables*/
-        public enum ColorGroup { DarkPurple, LightBlue, Violet, Orange, Red, Yellow, Green, DarkBlue}; /* Each of the colors that a property can be*/
+        public enum ColorGroup { DarkPurple, LightBlue, Violet, Orange, Red, Yellow, Green, DarkBlue, Tax}; /* Each of the colors that a property can be*/
         public string Name { get; set; }
         public string Type { get; set; }
         public int Cost { get; set; }
@@ -124,10 +124,10 @@ namespace ConsoleMonopoly
         public Player Owner { get; set; }
         public bool IsMortgaged { get; set; }
         public int[] Deck { get; set; } /* The deck of instructions that is random integers */
-        public ChanceAndCommChest(string name, int location, int[] deck)
+        public ChanceAndCommChest(string name, string type, int location, int[] deck)
         {
             Name = name;
-            Type = "CC";
+            Type = type;
             Cost = 0;
             Location = location;
             RentArray = null;

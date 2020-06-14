@@ -7,6 +7,8 @@
         public string Name { get; set; } /* Name of the player */
         public Token PlayerToken { get; set; } /* Token the player has */
         public int Location { get; set; } /* Location of the player on the board*/
+        public bool isJail { get; set; } /* Is this player in Jail? */
+        public bool JailFreeCard { get; set; }
         public int Funds { get; set; } /* Amount of money a player has*/
         public PlayerMonopoly[] Monopolies  { get; set; }
         public IProperty[] OwnedProperties { get; set; } /* The properties that the player owns*/
@@ -16,6 +18,8 @@
             Name = name;
             PlayerToken = token;
             Location = 0;
+            JailFreeCard = false;
+            isJail = false;
             Funds = funds;
             Monopolies = new PlayerMonopoly[8];
             OwnedProperties = ownedProperties;
