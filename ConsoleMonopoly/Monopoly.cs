@@ -227,81 +227,7 @@ namespace ConsoleMonopoly
                             Console.WriteLine("You have moved forward {0} spaces and landed on {1}", max, currentProperty.Name);
                             /* Now that they have landed do something*/
                             int rentDue = RentCalculator(board, currentPlayer, max); /* Rent is due. Handled in the function */
-                            switch(rentDue)
-                            {
-                                case 0: /* Mortgaged */
-                                    Console.WriteLine("This property is mortgaged by {0}, no rent is due.", currentProperty.Owner.Name);
-                                    break;
-                                case -1: /* This property is unowned */
-                                    Console.WriteLine("This property is unowned. Would you like to purchase it? Y/N");
-                                    Console.WriteLine("The default answer is No.");
-                                    if(currentPlayer.Funds > currentProperty.Cost || Console.ReadKey().Key == ConsoleKey.Y)
-                                    {
-                                        Console.WriteLine("Congratulations, you have purchased {0} for ${1}!");
-                                        currentPlayer.OwnedProperties.Append(currentProperty);
-                                        currentProperty.Owner = currentPlayer;
-                                        currentProperty.IsOwned = true;
-                                        if (MonopolyChecker(currentPlayer, currentProperty))
-                                        {
-                                            Console.WriteLine("Congratulations, you have made a monopoly and can start buying houses.");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("You either had insufficient funds or chose to not purchase the property. Time for an auction!");
-                                        /* auction time */
-                                    }
-                                    break;
-                                case -2: /* This is a misc property or CC/Chance */
-                                    if(currentProperty.Type == "CC") /* Chance or CC*/
-                                    {
-                                        ChanceAndCommChest CC = (ChanceAndCommChest)currentProperty;
-                                        int card = CC.Deck[commChestCard];
-                                        CommChestCards(listOfPlayers, card, currentPlayer);
-                                        commChestCard++;
-                                        if(commChestCard > 15)
-                                        {
-                                            commChestCard = 0;
-                                        }
-                                    }
-                                    else if(currentProperty.Type == "Chance")
-                                    {
-                                        ChanceAndCommChest Chance = (ChanceAndCommChest)currentProperty;
-                                        int card = Chance.Deck[chanceCard];
-                                        ChanceCards(listOfPlayers, card, currentPlayer);
-                                        chanceCard++;
-                                        if(chanceCard > 15)
-                                        {
-                                            chanceCard = 0;
-                                        }
-                                    }
-                                    else /* Misc: Parking, Visiting, GO, Jail */
-                                    {
-                                        MiscSpace misc = (MiscSpace)currentProperty;
-                                        switch (misc.SpaceType)
-                                        {
-                                            case MiscSpace.MiscType.Parking:
-                                                Console.WriteLine("You have landed on Free Parking. Enjoy your free parking!");
-                                                break;
-                                            case MiscSpace.MiscType.Visiting:
-                                                Console.WriteLine("You have landed on Visiting Jail. Say hi to the inmates.");
-                                                break;
-                                            case MiscSpace.MiscType.GO:
-                                                Console.WriteLine("You have landed on GO. Here is your 200$.");
-                                                currentPlayer.Funds += 200;
-                                                break;
-                                            case MiscSpace.MiscType.GoToJail:
-                                                Console.WriteLine("Go To Jail. Go directly to Jail Do not pass GO, do not collect $200.");
-                                                currentPlayer.isJail = true;
-                                                break;
-                                        }
-                                        
-                                    }
-                                    break;
-                                default: 
-                                    Console.WriteLine("You payed ${0} to {1} for rent.", rentDue, currentProperty.Owner.Name);
-                                    break;
-                            }
+                            PropertyChecker(rentDue, board, listOfPlayers, currentProperty, currentPlayer, commChestCard, chanceCard);
                             break;
                         case 4: /* Funds */
                             Console.WriteLine("You currently have ${0} in your funds.", currentPlayer.Funds);
@@ -540,6 +466,7 @@ namespace ConsoleMonopoly
                 case 9:
                     Console.WriteLine("Go Directly To Jail Go directly to Jail Do not pass GO, Do not collect $200");
                     player.isJail = true;
+                    player.Location = 10;
                     break;
                 case 10:
                     Console.WriteLine("You Have Won Second Prize In A Beauty Contest. You have collected $10");
@@ -569,41 +496,203 @@ namespace ConsoleMonopoly
                     break;
             }
         }
-        static void ChanceCards(Player[] listOfPlayers, int cardNumber, Player player)
+        static void ChanceCards(Player[] listOfPlayers, int cardNumber, Player player, Board board)
         {
             switch (cardNumber)
             {
                 case 0:
+                    Console.WriteLine("Your Building And Loan Matures. You have collected $150");
+                    player.Funds += 150;
                     break;
                 case 1:
+                    Console.WriteLine("Get Out Of Jail, Free.");
+                    player.JailFreeCard = true;
                     break;
                 case 2:
+                    Console.WriteLine("You Have Been Elected Chairman Of The Board. You payed each player $50");
+                    foreach(Player iterPlayer in listOfPlayers)
+                    {
+                        iterPlayer.Funds += 50;
+                    }
+                    player.Funds -= (listOfPlayers.Length + 1) * 50;
                     break;
                 case 3:
-                    break;
                 case 4:
-                    break;
                 case 5:
+                    if(cardNumber == 3)
+                    {
+                        Console.WriteLine("Advance To Illinois Ave. You must pay rent if owned. If you pass GO, collect $200.");
+                        player.Location = 24;
+                    }
+                    else if(cardNumber == 4)
+                    {
+                        Console.WriteLine("Take A Walk On The Board Walk. Advance to Board Walk. If you pass GO, collect $200.");
+                        player.Location = 39;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Advance to St. Charles Place. If you pass GO, collect $200.");
+                        player.Location = 11;
+                    }
+                    int rentDue = RentCalculator(board, player, 0);
+                    IProperty chanceProperty = board.Properties[player.Location];
+                    PropertyChecker(rentDue, board, listOfPlayers, chanceProperty, player);
                     break;
-                case 6:
-                    break;
+                case 6:/* There are two separate advance to nearest RRs */
                 case 7:
+                    Console.WriteLine("Advance Token to the nearest Railroad and pay owner double the rent. If Railroad is unowned you may buy it.");
+                    int next = 5;
+                    int lowest = 0;
+                    for(int i = 0; i < 4; i++)
+                    {
+                        if((next - player.Location) < lowest && (next - player.Location) > 0)
+                        {
+                            lowest = next;
+                        }
+                        next += 10;
+                    }
+                    rentDue = RentCalculator(board, player, 0);
+                    chanceProperty = board.Properties[player.Location];
+                    PropertyChecker(rentDue, board, listOfPlayers, chanceProperty, player);
                     break;
+                    /* This is not done either */
                 case 8:
+                    Console.WriteLine("Pay Poor Tax of $15.");
+                    player.Funds -= 15;
                     break;
                 case 9:
+                    Console.WriteLine("Bank pays you dividend of $50");
+                    player.Funds += 50;
                     break;
                 case 10:
+                    Console.WriteLine("Take A Ride On The Reading. If you pass go, you collect $200");
+                    if(player.Location > 5)
+                    {
+                        player.Funds += 200;
+                    }
+                    player.Location = 5;
+                    rentDue = RentCalculator(board, player, 0);
+                    chanceProperty = board.Properties[player.Location];
+                    PropertyChecker(rentDue, board, listOfPlayers, chanceProperty, player);
                     break;
                 case 11:
+                    Console.WriteLine("Advance To GO. You have collected $200");
+                    player.Location = 0;
+                    player.Funds += 200;
                     break;
                 case 12:
+                    Console.WriteLine("Advance Token to nearest Utility and pay owner ten times a dice roll. If Utility is unowned you may buy it.");
+                    int electric = player.Location - 12;
+                    int water = player.Location - 28;
+                    if(water < 0 || electric < water)
+                    {
+                        player.Location = 12;
+                    }
+                    else
+                    {
+                        player.Location = 28;
+                    }
+                    DiceRoll dice = new DiceRoll();
+                    int roll = dice.Roll();
+                    rentDue = RentCalculator(board, player, roll);
+                    chanceProperty = board.Properties[player.Location];
+                    PropertyChecker(rentDue, board, listOfPlayers, chanceProperty, player);
                     break;
                 case 13:
+                    Console.WriteLine("Go Back 3 Spaces");
+                    /* Three cases: CC, NY Ave, Income Tax*/
+                    player.Location -= 3;
                     break;
                 case 14:
+                    Console.WriteLine("Go Directly To Jail. Do Not Pass GO, Do Not Collect $200");
+                    player.isJail = true;
+                    player.Location = 10;
                     break;
                 case 15:
+                    Console.WriteLine("Make General Repairs On All Your Property. For each house pay $25, for each hotel pay $100");
+                    foreach(RegularProperty property in player.OwnedProperties)
+                    {
+
+                    }
+                    /* This will be the same as CC */
+                    break;
+            }
+        }
+        static void PropertyChecker(int rentDue, Board board, Player[] listOfPlayers, IProperty currentProperty, Player currentPlayer, int commChestCard = 0, int chanceCard = 0)
+        {
+            switch(rentDue)
+            {
+                case 0: /* Mortgaged */
+                    Console.WriteLine("This property is mortgaged by {0}, no rent is due.", currentProperty.Owner.Name);
+                    break;
+                case -1: /* This property is unowned */
+                    Console.WriteLine("This property is unowned. Would you like to purchase it? Y/N");
+                    Console.WriteLine("The default answer is No.");
+                    if(currentPlayer.Funds > currentProperty.Cost || Console.ReadKey().Key == ConsoleKey.Y)
+                    {
+                        Console.WriteLine("Congratulations, you have purchased {0} for ${1}!");
+                        currentPlayer.OwnedProperties.Append(currentProperty);
+                        currentProperty.Owner = currentPlayer;
+                        currentProperty.IsOwned = true;
+                        if (MonopolyChecker(currentPlayer, currentProperty))
+                        {
+                            Console.WriteLine("Congratulations, you have made a monopoly and can start buying houses.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("You either had insufficient funds or chose to not purchase the property. Time for an auction!");
+                        /* auction time */
+                    }
+                    break;
+                case -2: /* This is a misc property or CC/Chance */
+                    if(currentProperty.Type == "CC") /* Chance or CC*/
+                    {
+                        ChanceAndCommChest CC = (ChanceAndCommChest)currentProperty;
+                        int card = CC.Deck[commChestCard];
+                        CommChestCards(listOfPlayers, card, currentPlayer);
+                        commChestCard++;
+                        if(commChestCard > 15)
+                        {
+                            commChestCard = 0;
+                        }
+                    }
+                    else if(currentProperty.Type == "Chance")
+                    {
+                        ChanceAndCommChest Chance = (ChanceAndCommChest)currentProperty;
+                        int card = Chance.Deck[chanceCard];
+                        ChanceCards(listOfPlayers, card, currentPlayer, board);
+                        chanceCard++;
+                        if(chanceCard > 15)
+                        {
+                            chanceCard = 0;
+                        }
+                    }
+                    else /* Misc: Parking, Visiting, GO, Jail */
+                    {
+                        MiscSpace misc = (MiscSpace)currentProperty;
+                        switch (misc.SpaceType)
+                        {
+                            case MiscSpace.MiscType.Parking:
+                                Console.WriteLine("You have landed on Free Parking. Enjoy your free parking!");
+                                break;
+                            case MiscSpace.MiscType.Visiting:
+                                Console.WriteLine("You have landed on Visiting Jail. Say hi to the inmates.");
+                                break;
+                            case MiscSpace.MiscType.GO:
+                                Console.WriteLine("You have landed on GO. Here is your 200$.");
+                                currentPlayer.Funds += 200;
+                                break;
+                            case MiscSpace.MiscType.GoToJail:
+                                Console.WriteLine("Go To Jail. Go directly to Jail Do not pass GO, do not collect $200.");
+                                currentPlayer.isJail = true;
+                                break;
+                        }
+                        
+                    }
+                    break;
+                default: 
+                    Console.WriteLine("You payed ${0} to {1} for rent.", rentDue, currentProperty.Owner.Name);
                     break;
             }
         }

@@ -52,7 +52,7 @@ namespace ConsoleMonopoly
             prop[22] = new ChanceAndCommChest("Chance", "Chance", 22, ChanceDeck);
             prop[23] = new RegularProperty("Indiana Avenue", 220, 23, 150, KentAndIndiRent, RegularProperty.ColorGroup.Red);
             int[] IllRent = new int[6] { 20, 100, 300, 750, 925, 1100 };
-            prop[24] = new RegularProperty("Indiana Avenue", 240, 24, 150, IllRent, RegularProperty.ColorGroup.Red);
+            prop[24] = new RegularProperty("Illinois Avenue", 240, 24, 150, IllRent, RegularProperty.ColorGroup.Red);
             prop[25] = new RailRoadProperty("B & O Railroad", 25, RRRent);
             int[] AtlAndVentRent = new int[6] { 22, 110, 330, 800, 975, 1150 };
             prop[26] = new RegularProperty("Atlantic Avenue", 260, 26, 150, AtlAndVentRent, RegularProperty.ColorGroup.Yellow);
