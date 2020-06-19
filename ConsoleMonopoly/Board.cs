@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ConsoleMonopoly
 {
-    class Board 
+    public class Board 
     {
         /*Create the board, each property, list of Chance/CC, player tokens, etc.*/
         public IProperty[] Properties;
@@ -105,7 +105,7 @@ namespace ConsoleMonopoly
             return Chance;
         }
     }
-    class HousesAndHotels 
+    public class HousesAndHotels 
     {
         /* The house and hotel supply that is finite on purpose*/
         public int Houses { get; set; }

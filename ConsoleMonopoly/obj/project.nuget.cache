@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "asfkBAJS45LhoT1KYYlgWLpeiAtABFDNt1j0ywKhgctuFsNHlmJkCiVLtC3MNPWwCQ07QQ386px426bjt0njNQ==",
+  "dgSpecHash": "w/Fq/uljwewss327l2V4apjejyYcee4t5Tae2M58vj0sarBF+Nvn9/sLYw/Zioa69n1FanZCdzbMlpbYRoqydg==",
   "success": true,
   "projectFilePath": "C:\\Users\\retzi\\source\\repos\\cel8473\\ConsoleMonopoly\\ConsoleMonopoly\\ConsoleMonopoly.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\retzi\\.nuget\\packages\\mstest.testframework\\2.1.2\\mstest.testframework.2.1.2.nupkg.sha512",
     "C:\\Users\\retzi\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.2\\microsoft.aspnetcore.app.ref.3.1.2.nupkg.sha512"
   ],
   "logs": []

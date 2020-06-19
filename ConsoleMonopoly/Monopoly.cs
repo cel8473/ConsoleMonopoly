@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ConsoleMonopoly
 {
-    class Monopoly
+    public class Monopoly
     {
         public enum Actions { EndTurn, Roll, Trade, Unmortgage, Funds, Properties, Houses };
         static void Main(string[] args) 
@@ -256,7 +256,7 @@ namespace ConsoleMonopoly
             }
         }
 
-        static bool MonopolyChecker(Player player, IProperty property) /* Does the player have a monopoly?*/
+        public static bool MonopolyChecker(Player player, IProperty property) /* Does the player have a monopoly?*/
         {
             if (property.Type.Equals("Reg"))
             {
@@ -336,7 +336,7 @@ namespace ConsoleMonopoly
             }
         }
 
-        static int RentCalculator(Board board, Player player, int roll)
+        public static int RentCalculator(Board board, Player player, int roll)
         {
             string landedType = board.Properties[player.Location].Type;
             switch (landedType)
@@ -418,7 +418,7 @@ namespace ConsoleMonopoly
             }
         }
 
-        static void CommChestCards(Player[] listOfPlayers, int cardNumber, Player player)
+        public static void CommChestCards(Player[] listOfPlayers, int cardNumber, Player player)
         {
             switch (cardNumber)
             {
@@ -496,7 +496,7 @@ namespace ConsoleMonopoly
                     break;
             }
         }
-        static void ChanceCards(Player[] listOfPlayers, int cardNumber, Player player, Board board)
+        public static void ChanceCards(Player[] listOfPlayers, int cardNumber, Player player, Board board)
         {
             switch (cardNumber)
             {
@@ -618,7 +618,7 @@ namespace ConsoleMonopoly
                     break;
             }
         }
-        static void PropertyChecker(int rentDue, Board board, Player[] listOfPlayers, IProperty currentProperty, Player currentPlayer, int commChestCard = 0, int chanceCard = 0)
+        public static void PropertyChecker(int rentDue, Board board, Player[] listOfPlayers, IProperty currentProperty, Player currentPlayer, int commChestCard = 0, int chanceCard = 0)
         {
             switch(rentDue)
             {

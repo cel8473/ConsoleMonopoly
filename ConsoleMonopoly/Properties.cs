@@ -51,7 +51,7 @@ namespace ConsoleMonopoly
         }
     }
 
-    class RailRoadProperty : IProperty
+    public class RailRoadProperty : IProperty
     {
         /* RR Properties (Reading RR) see IProperty for generic variables*/
         public string Name { get; set; }
@@ -79,7 +79,7 @@ namespace ConsoleMonopoly
         }
     }
 
-    class UtilityProperty : IProperty
+    public class UtilityProperty : IProperty
     {
         /* Utility Properties (Electric Company) see IProperty for generic variables*/
         public string Name { get; set; }
@@ -111,7 +111,7 @@ namespace ConsoleMonopoly
         }
     }
 
-    class ChanceAndCommChest : IProperty 
+    public class ChanceAndCommChest : IProperty 
     {
         /* Chance or Community Chest, see IProperty for generic variables*/
         public string Name { get; set; }
@@ -138,7 +138,7 @@ namespace ConsoleMonopoly
         }
     }
 
-    class MiscSpace : IProperty
+    public class MiscSpace : IProperty
     {
         /* Free Parking, Just Visiting, Go To Jail, and Go Space */
         public enum MiscType { Parking, Visiting, GoToJail, GO}

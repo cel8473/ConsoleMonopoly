@@ -14,6 +14,13 @@ C:\Users\retzi\source\repos\ConsoleMonopoly\obj\Debug\netcoreapp3.1\ConsoleMonop
 C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\obj\Debug\netcoreapp3.1\ConsoleMonopoly.csprojAssemblyReference.cache
 C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\obj\Debug\netcoreapp3.1\ConsoleMonopoly.AssemblyInfoInputs.cache
 C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\obj\Debug\netcoreapp3.1\ConsoleMonopoly.AssemblyInfo.cs
-C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\obj\Debug\netcoreapp3.1\ConsoleMonopoly.csproj.CoreCompileInputs.cache
 C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\obj\Debug\netcoreapp3.1\ConsoleMonopoly.dll
 C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\obj\Debug\netcoreapp3.1\ConsoleMonopoly.pdb
+C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\bin\Debug\netcoreapp3.1\ConsoleMonopoly.exe
+C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\bin\Debug\netcoreapp3.1\ConsoleMonopoly.deps.json
+C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\bin\Debug\netcoreapp3.1\ConsoleMonopoly.runtimeconfig.json
+C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\bin\Debug\netcoreapp3.1\ConsoleMonopoly.runtimeconfig.dev.json
+C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\bin\Debug\netcoreapp3.1\ConsoleMonopoly.dll
+C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\bin\Debug\netcoreapp3.1\ConsoleMonopoly.pdb
+C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\obj\Debug\netcoreapp3.1\ConsoleMonopoly.genruntimeconfig.cache
+C:\Users\retzi\source\repos\cel8473\ConsoleMonopoly\ConsoleMonopoly\obj\Debug\netcoreapp3.1\ConsoleMonopoly.csproj.CoreCompileInputs.cache

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ConsoleMonopoly
 {
-    class DiceRoll 
+    public class DiceRoll 
     {
         public int Roll()
         {
